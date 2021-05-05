@@ -1,29 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"github.com/nais/outtune/pkg/cert"
-	log "github.com/sirupsen/logrus"
-	"os"
+	"github.com/nais/outtune/apiserver"
+	"net/http"
 )
 
 func main() {
-	var email string
-	flag.StringVar(&email, "email", "", "cert owner email (required)")
-	flag.Parse()
-
-	if email == "" {
-		flag.Usage()
-		fmt.Println("\nemail is required")
-		os.Exit(1)
-	}
-
-	pem, err := cert.MakeCert(email)
-	if err != nil {
-		log.Errorf("making cert: %v", err)
-		os.Exit(1)
-	}
-
-	log.Infof("cert: %v", pem)
+	router := apiserver.New()
+	fmt.Println("running @", "localhost:8080")
+	fmt.Println(http.ListenAndServe("localhost:8080", router))
 }
