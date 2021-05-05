@@ -13,6 +13,7 @@ jobs:
       version: ${{ steps.generate-version.outputs.version }}
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v2
       - name: Generate version
         id: generate-version
         run: echo ::set-output name=version::$(date "+%Y-%m-%d-%H%M%S")-$(git rev-parse --short HEAD)
@@ -31,6 +32,7 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v2
       - name: Run tests
         run: make test
 
