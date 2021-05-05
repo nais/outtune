@@ -1,0 +1,20 @@
+on:
+  push:
+    paths:
+      - '**.go'
+      - go.mod
+      - go.sum
+      - Dockerfile
+      - nais.yaml
+      - 'nais.d/**.yaml'
+
+jobs:
+  build:
+    steps:
+      - name: Compile
+        script: go build ./...
+
+  test:
+    steps:
+      - name: Run tests
+        script: go test ./...
