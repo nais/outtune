@@ -20,8 +20,8 @@ import (
 
 const (
 	CAGoogleProject = "nais-device"
-    CAGoogleProjectLocation = "europe-west1"
-    PrivateKeyFileName = "key.pem"
+	CAGoogleProjectLocation = "europe-west1"
+	PrivateKeyFileName = "key.pem"
 )
 
 func publicKeytoPem(key *rsa.PublicKey) ([]byte, error) {
@@ -87,21 +87,10 @@ func getPrivateKey() (*rsa.PrivateKey, error) {
 	}
 }
 
-func MakeCert(email string) (string, error) {
-	ctx := context.Background()
+func MakeCert(ctx context.Context, email string, keyPem []byte) (string, error) {
 	client, err := privateca.NewCertificateAuthorityClient(ctx)
 	if err != nil {
 		return "", fmt.Errorf("create client: %w", err)
-	}
-
-	privateKey, err := getPrivateKey()
-	if err != nil {
-		return "", fmt.Errorf("get private key: %w", err)
-	}
-
-	publicKeyPem, err := publicKeytoPem(&privateKey.PublicKey)
-	if err != nil {
-		return "", fmt.Errorf("get public key pem: %w", err)
 	}
 
 	csr := &privatecapb.CreateCertificateRequest{
@@ -127,27 +116,18 @@ func MakeCert(email string) (string, error) {
 							ReusableConfigValues: &privatecapb.ReusableConfigValues{
 								KeyUsage: &privatecapb.KeyUsage{
 									BaseKeyUsage: &privatecapb.KeyUsage_KeyUsageOptions{
-										DigitalSignature:  true,
+										DigitalSignature: true,
 									},
 									ExtendedKeyUsage: &privatecapb.KeyUsage_ExtendedKeyUsageOptions{
 										ClientAuth: true,
 									},
 								},
-/*								AdditionalExtensions: []*privatecapb.X509Extension{
-									{
-										ObjectId: &privatecapb.ObjectId{
-											ObjectIdPath: nil,
-										},
-										Critical: false,
-										Value:    nil,
-									},
-								},
-*/							},
+							},
 						},
 					},
 					PublicKey: &privatecapb.PublicKey{
 						Type: privatecapb.PublicKey_PEM_RSA_KEY,
-						Key:  publicKeyPem,
+						Key: keyPem,
 					},
 				},
 			},
@@ -164,5 +144,4 @@ func MakeCert(email string) (string, error) {
 	}
 
 	return resp.PemCertificate, nil
-
 }

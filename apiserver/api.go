@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"github.com/go-chi/chi"
 	"github.com/nais/outtune/pkg/cert"
@@ -31,7 +32,14 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	generatedCert, err := cert.MakeCert(cReq.Email)
+	publicKey, err := base64.StdEncoding.DecodeString(cReq.PublicKeyPem)
+	if err != nil {
+		log.Errorf("base64 decoding: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	generatedCert, err := cert.MakeCert(request.Context(), cReq.Email, publicKey)
 	if err != nil {
 		log.Errorf("generating cert: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
