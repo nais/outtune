@@ -1,16 +1,19 @@
 package main
 
 import (
-	"context"
+	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
+	"encoding/json"
 	"encoding/pem"
 	"flag"
 	"fmt"
-	"github.com/nais/outtune/pkg/cert"
+	"github.com/nais/outtune/pkg/apiserver"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -84,33 +87,41 @@ func publicKeytoPem(key *rsa.PublicKey) ([]byte, error) {
 
 func main() {
 	var email string
+	var apiUrl string
 	flag.StringVar(&email, "email", "", "cert owner email (required)")
+	flag.StringVar(&apiUrl, "apiurl", "https://outtune.prod-gcp.nais.io", "url to the api (optional)")
 	flag.Parse()
 
 	if email == "" {
 		flag.Usage()
-		fmt.Println("\nemail is required")
-		os.Exit(2)
+		log.Fatal("email is required")
 	}
 
-	ctx := context.Background()
 	privateKey, err :=  getPrivateKey()
 	if err != nil {
-		log.Errorf("get private key: %w", err)
-		os.Exit(1)
+		log.Fatalf("get private key: %v", err)
 	}
 
 	publicKeyPem, err := publicKeytoPem(&privateKey.PublicKey)
 	if err != nil {
-		log.Errorf("get public key pem: %w", err)
-		os.Exit(1)
-	}
-	pemCertificate, err := cert.MakeCert(ctx, email, publicKeyPem)
-	if err != nil {
-		log.Errorf("generate pemCertificate: %v", err)
-		os.Exit(1)
+		log.Fatalf("get public key pem: %v", err)
 	}
 
-	log.Infoln("Generated Certificate:")
-	log.Infof("%v", pemCertificate)
+	certReq := apiserver.CertRequest{Email: email, PublicKeyPem: base64.StdEncoding.EncodeToString(publicKeyPem)}
+	jsonPayload, err := json.Marshal(certReq)
+	if err != nil {
+		log.Fatalf("encode json request: %v", err)
+	}
+
+	response, err := http.Post(apiUrl + "/cert", "application/json", bytes.NewReader(jsonPayload))
+	if err != nil {
+		log.Fatalf("make cert request: %v", err)
+	}
+	var certResponse apiserver.CertResponse
+	err = json.NewDecoder(response.Body).Decode(&certResponse)
+	if err != nil {
+		log.Fatalf("unmarshal response json: %v", err)
+	}
+
+	fmt.Println(certResponse.CertPem)
 }

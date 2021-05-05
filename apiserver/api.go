@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/go-chi/chi"
+	"github.com/nais/outtune/pkg/apiserver"
 	"github.com/nais/outtune/pkg/cert"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -13,17 +14,8 @@ type api struct {
 	value string
 }
 
-type CertRequest struct {
-	Email string `json:"email"`
-	PublicKeyPem string `json:"public_key_pem"`
-}
-
-type CertResponse struct {
-	CertPem string `json:"cert_pem"`
-}
-
 func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
-	var cReq CertRequest
+	var cReq apiserver.CertRequest
 	err := json.NewDecoder(request.Body).Decode(&cReq)
 
 	if err != nil {
@@ -46,7 +38,7 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(writer).Encode(CertResponse{CertPem: generatedCert})
+	err = json.NewEncoder(writer).Encode(apiserver.CertResponse{CertPem: generatedCert})
 	if err != nil {
 		log.Errorf("writing response: %v", err)
 	}
