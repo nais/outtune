@@ -44,12 +44,18 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func (a *api) observability(writer http.ResponseWriter, _ *http.Request) {
+	writer.WriteHeader(http.StatusOK)
+}
+
 func New() chi.Router {
 	api := &api{}
-
 	r := chi.NewRouter()
 
 	r.Post("/cert", api.cert)
+
+	r.Get("/isalive", api.observability)
+	r.Get("/isready", api.observability)
 
 	return r
 }

@@ -1,0 +1,2 @@
+ingresses:
+  - "https://outtune-api.prod-gcp.nais.io"
