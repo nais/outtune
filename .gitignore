@@ -1,3 +1,9 @@
+# IDEs and shit
 .idea
-outtune
+*.swp
+
+# Produced files
+/outtune
+/api
+/cli
 *.pem
