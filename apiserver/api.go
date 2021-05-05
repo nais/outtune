@@ -38,8 +38,10 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	json.NewEncoder(writer).Encode(CertResponse{CertPem: generatedCert})
-
+	err = json.NewEncoder(writer).Encode(CertResponse{CertPem: generatedCert})
+	if err != nil {
+		log.Errorf("writing response: %v", err)
+	}
 }
 
 func New() chi.Router {
