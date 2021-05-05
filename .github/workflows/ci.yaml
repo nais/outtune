@@ -37,7 +37,7 @@ jobs:
         run: make test
 
   deploy:
-    name: Deploy to dev-gcp
+    name: Deploy to gcp
     needs: [build, test]
     runs-on: ubuntu-20.04
     steps:
