@@ -10,11 +10,14 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-20.04
     steps:
       - name: Compile
-        script: go build ./...
+        run: go build ./...
+
 
   test:
+    runs-on: ubuntu-20.04
     steps:
       - name: Run tests
-        script: go test ./...
+        run: go test ./...
