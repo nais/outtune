@@ -3,7 +3,6 @@
 *.swp
 
 # Produced files
-/outtune
-/api
-/cli
+/outtune-cli
+/outtune-api
 *.pem
