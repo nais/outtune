@@ -2,18 +2,18 @@ on:
   push:
     paths:
       - '**.go'
-      - go.mod
-      - go.sum
+      - 'go.*'
       - Dockerfile
       - nais.yaml
       - 'nais.d/**.yaml'
+      - .github/workflows/ci.yaml
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
       - name: Compile
-        run: go build ./...
+        run: make all
 
 
   test:
