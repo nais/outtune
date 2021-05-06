@@ -57,4 +57,3 @@ jobs:
           CLUSTER: prod-gcp
           RESOURCE: nais/nais.yaml
           VARS: nais/prod.yaml
-
