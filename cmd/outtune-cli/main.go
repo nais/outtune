@@ -32,7 +32,7 @@ func getPrivateKey() (*rsa.PrivateKey, error) {
 		}
 
 		privateKeyBlock := &pem.Block{
-			Type:  "",
+			Type:  "RSA PRIVATE KEY",
 			Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
 		}
 
