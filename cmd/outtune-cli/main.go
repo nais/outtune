@@ -89,7 +89,7 @@ func main() {
 	var email string
 	var apiUrl string
 	flag.StringVar(&email, "email", "", "cert owner email (required)")
-	flag.StringVar(&apiUrl, "apiurl", "https://outtune.prod-gcp.nais.io", "url to the api (optional)")
+	flag.StringVar(&apiUrl, "apiurl", "https://outtune-api.prod-gcp.nais.io", "url to the api (optional)")
 	flag.Parse()
 
 	if email == "" {
