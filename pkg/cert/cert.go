@@ -58,7 +58,7 @@ func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error)
 					},
 				},
 			},
-			Lifetime: durationpb.New(time.Hour * 24 * 7),
+			Lifetime: durationpb.New(time.Hour * 24),
 			Labels:   map[string]string{
 				"created-by": "outtune",
 			},
