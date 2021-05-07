@@ -36,7 +36,7 @@ func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error)
 							CountryCode:        "NO",
 							OrganizationalUnit: "naisdevice",
 						},
-						CommonName: fmt.Sprintf("%s is out of tune", serial),
+						CommonName: fmt.Sprintf("naisdevice - %s is out of tune", serial),
 					},
 					ReusableConfig: &privatecapb.ReusableConfigWrapper{
 						ConfigValues: &privatecapb.ReusableConfigWrapper_ReusableConfigValues{
