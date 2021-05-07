@@ -8,6 +8,7 @@ import (
 	"github.com/nais/outtune/pkg/cert"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
 )
 
 type api struct {
@@ -31,7 +32,8 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	generatedCert, err := cert.MakeCert(request.Context(), cReq.Serial, publicKey)
+	trimmedSerial := strings.Replace(cReq.Serial, "\n", "", -1)
+	generatedCert, err := cert.MakeCert(request.Context(), trimmedSerial, publicKey)
 	if err != nil {
 		log.Errorf("generating cert: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)

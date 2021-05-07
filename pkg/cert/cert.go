@@ -22,22 +22,21 @@ func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error)
 		return "", fmt.Errorf("create client: %w", err)
 	}
 
-	name := fmt.Sprintf("%s_%d", serial, time.Now().Unix())
+
 
 	csr := &privatecapb.CreateCertificateRequest{
 		Parent:        fmt.Sprintf("projects/%s/locations/%s/certificateAuthorities/%s", CAGoogleProject, CAGoogleProjectLocation, CAName),
-		CertificateId: fmt.Sprintf(name),
+		CertificateId: fmt.Sprintf("%s_%d", serial, time.Now().Unix()),
 		Certificate: &privatecapb.Certificate{
-			Name: name,
 			CertificateConfig: &privatecapb.Certificate_Config{
 				Config: &privatecapb.CertificateConfig{
 					SubjectConfig: &privatecapb.CertificateConfig_SubjectConfig{
 						Subject: &privatecapb.Subject{
-							CountryCode:        "NO",
 							Organization:       "NAV",
-							OrganizationalUnit: "Utvikling",
+							CountryCode:        "NO",
+							OrganizationalUnit: "naisdevice",
 						},
-						CommonName: name,
+						CommonName: fmt.Sprintf("%s is out of tune", serial),
 					},
 					ReusableConfig: &privatecapb.ReusableConfigWrapper{
 						ConfigValues: &privatecapb.ReusableConfigWrapper_ReusableConfigValues{
