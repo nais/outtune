@@ -12,7 +12,8 @@ import (
 
 const (
 	CAGoogleProject = "nais-device"
-	CAGoogleProjectLocation = "europe-west1"
+	CAGoogleProjectLocation = "europe-north1"
+	CAName = "naisdevice-root"
 )
 
 
@@ -23,7 +24,7 @@ func MakeCert(ctx context.Context, email string, keyPem []byte) (string, error) 
 	}
 
 	csr := &privatecapb.CreateCertificateRequest{
-		Parent:        fmt.Sprintf("projects/%s/locations/%s/certificateAuthorities/%s", CAGoogleProject, CAGoogleProjectLocation, "naisdevice"),
+		Parent:        fmt.Sprintf("projects/%s/locations/%s/certificateAuthorities/%s", CAGoogleProject, CAGoogleProjectLocation, CAName),
 		CertificateId: fmt.Sprintf("CertId%d", mathrand.Uint64()),
 		Certificate: &privatecapb.Certificate{
 			Name: "CertName",
