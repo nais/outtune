@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	pkcs12 "software.sslmate.com/src/go-pkcs12"
 	"strings"
 )
 
@@ -123,5 +124,15 @@ func main() {
 		log.Fatalf("unmarshal response json: %v", err)
 	}
 
-	fmt.Println(certResponse.CertPem)
+	//fmt.Println(certResponse.CertPem)
+	certBlock, _ := pem.Decode([]byte(certResponse.CertPem))
+
+	cert := &x509.Certificate{Raw: certBlock.Bytes}
+
+	encode, err := pkcs12.Encode(rand.Reader, privateKey, cert, nil, "password")
+	if err != nil {
+		log.Fatalf("encoding cert and key: %v", err)
+	}
+
+	fmt.Println(string(encode))
 }

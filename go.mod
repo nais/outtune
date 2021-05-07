@@ -8,4 +8,5 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	google.golang.org/genproto v0.0.0-20210503173045-b96a97608f20
 	google.golang.org/protobuf v1.26.0
+	software.sslmate.com/src/go-pkcs12 v0.0.0-20210415151418-c5206de65a78
 )
