@@ -44,18 +44,51 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func (a *api) getCert(writer http.ResponseWriter, request *http.Request) {
+	pubKeyFromUrl := request.URL.Query().Get("public_key")
+	publicKey, err := base64.StdEncoding.DecodeString(pubKeyFromUrl)
+	if err != nil {
+		log.Errorf("base64 decode public key: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	oid := request.Context().Value("oid").(string)
+	generatedCert, err := cert.MakeCert(request.Context(), oid, publicKey)
+	if err != nil {
+		log.Errorf("generating cert: %v", err)
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(writer).Encode(apiserver.CertResponse{CertPem: generatedCert})
+	if err != nil {
+		log.Errorf("writing response: %v", err)
+	}
+
+}
+
 func (a *api) observability(writer http.ResponseWriter, _ *http.Request) {
 	writer.WriteHeader(http.StatusOK)
 }
 
-func New() chi.Router {
+func (a *api) oauth2Callback(writer http.ResponseWriter, _ *http.Request) {
+
+}
+
+func New(validator func(next http.Handler) http.Handler) chi.Router {
 	api := &api{}
 	r := chi.NewRouter()
 
-	r.Post("/cert", api.cert)
+	r.Group(func(r chi.Router) {
+		r.Use(validator)
+		r.Post("/cert", api.cert)
+		r.Get("/cert", api.getCert)
+	})
 
 	r.Get("/isalive", api.observability)
 	r.Get("/isready", api.observability)
+
+	r.Get("/oauth2/callback", api.oauth2Callback)
 
 	return r
 }

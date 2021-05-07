@@ -34,6 +34,11 @@ spec:
     outbound:
       external:
         - host: privateca.googleapis.com
+  azure:
+    application:
+      enabled: true
+      replyURLs:
+        - /oauth2/callback
   ingresses:
     {{#each ingresses as |url|}}
     - {{url}}
