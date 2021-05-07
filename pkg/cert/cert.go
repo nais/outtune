@@ -17,17 +17,19 @@ const (
 )
 
 
-func MakeCert(ctx context.Context, email string, keyPem []byte) (string, error) {
+func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error) {
 	client, err := privateca.NewCertificateAuthorityClient(ctx)
 	if err != nil {
 		return "", fmt.Errorf("create client: %w", err)
 	}
 
+	name := fmt.Sprintf("%s - %s", serial, time.Now().Format(time.RFC1123))
+
 	csr := &privatecapb.CreateCertificateRequest{
 		Parent:        fmt.Sprintf("projects/%s/locations/%s/certificateAuthorities/%s", CAGoogleProject, CAGoogleProjectLocation, CAName),
 		CertificateId: fmt.Sprintf("CertId%d", mathrand.Uint64()),
 		Certificate: &privatecapb.Certificate{
-			Name: "CertName",
+			Name: name,
 			CertificateConfig: &privatecapb.Certificate_Config{
 				Config: &privatecapb.CertificateConfig{
 					SubjectConfig: &privatecapb.CertificateConfig_SubjectConfig{
@@ -36,10 +38,7 @@ func MakeCert(ctx context.Context, email string, keyPem []byte) (string, error) 
 							Organization:       "NAV",
 							OrganizationalUnit: "Utvikling",
 						},
-						CommonName: "CommonName",
-						SubjectAltName: &privatecapb.SubjectAltNames{
-							EmailAddresses: []string{email},
-						},
+						CommonName: name,
 					},
 					ReusableConfig: &privatecapb.ReusableConfigWrapper{
 						ConfigValues: &privatecapb.ReusableConfigWrapper_ReusableConfigValues{

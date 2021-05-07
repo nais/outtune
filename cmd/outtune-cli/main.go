@@ -108,7 +108,7 @@ func main() {
 		log.Fatalf("get public key pem: %v", err)
 	}
 
-	certReq := apiserver.CertRequest{Email: email, PublicKeyPem: base64.StdEncoding.EncodeToString(publicKeyPem)}
+	certReq := apiserver.CertRequest{Serial: email, PublicKeyPem: base64.StdEncoding.EncodeToString(publicKeyPem)}
 	jsonPayload, err := json.Marshal(certReq)
 	if err != nil {
 		log.Fatalf("encode json request: %v", err)

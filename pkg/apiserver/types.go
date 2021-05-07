@@ -1,7 +1,7 @@
 package apiserver
 
 type CertRequest struct {
-	Email        string `json:"email"`
+	Serial       string `json:"serial"`
 	PublicKeyPem string `json:"public_key_pem"`
 }
 

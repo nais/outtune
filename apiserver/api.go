@@ -31,7 +31,7 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	generatedCert, err := cert.MakeCert(request.Context(), cReq.Email, publicKey)
+	generatedCert, err := cert.MakeCert(request.Context(), cReq.Serial, publicKey)
 	if err != nil {
 		log.Errorf("generating cert: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
