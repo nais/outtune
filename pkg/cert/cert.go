@@ -6,7 +6,6 @@ import (
 	"fmt"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 	"google.golang.org/protobuf/types/known/durationpb"
-	mathrand "math/rand"
 	"time"
 )
 
@@ -23,11 +22,11 @@ func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error)
 		return "", fmt.Errorf("create client: %w", err)
 	}
 
-	name := fmt.Sprintf("%s - %s", serial, time.Now().Format(time.RFC1123))
+	name := fmt.Sprintf("%s_%d", serial, time.Now().Unix())
 
 	csr := &privatecapb.CreateCertificateRequest{
 		Parent:        fmt.Sprintf("projects/%s/locations/%s/certificateAuthorities/%s", CAGoogleProject, CAGoogleProjectLocation, CAName),
-		CertificateId: fmt.Sprintf("CertId%d", mathrand.Uint64()),
+		CertificateId: fmt.Sprintf(name),
 		Certificate: &privatecapb.Certificate{
 			Name: name,
 			CertificateConfig: &privatecapb.Certificate_Config{
