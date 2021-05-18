@@ -4,17 +4,17 @@ import (
 	privateca "cloud.google.com/go/security/privateca/apiv1beta1"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"time"
 )
 
 const (
-	CAGoogleProject = "nais-device"
+	CAGoogleProject         = "nais-device"
 	CAGoogleProjectLocation = "europe-north1"
-	CAName = "naisdevice-root"
+	CAName                  = "naisdevice-root"
 )
-
 
 func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error) {
 	client, err := privateca.NewCertificateAuthorityClient(ctx)
@@ -22,11 +22,9 @@ func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error)
 		return "", fmt.Errorf("create client: %w", err)
 	}
 
-
-
 	csr := &privatecapb.CreateCertificateRequest{
 		Parent:        fmt.Sprintf("projects/%s/locations/%s/certificateAuthorities/%s", CAGoogleProject, CAGoogleProjectLocation, CAName),
-		CertificateId: fmt.Sprintf("%s_%d", serial, time.Now().Unix()),
+		CertificateId: fmt.Sprintf("%s_%d_%d", serial, time.Now().Unix(), uuid.New().ID()),
 		Certificate: &privatecapb.Certificate{
 			CertificateConfig: &privatecapb.Certificate_Config{
 				Config: &privatecapb.CertificateConfig{
