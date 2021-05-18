@@ -98,7 +98,7 @@ func main() {
 		log.Fatal("email is required")
 	}
 
-	privateKey, err :=  getPrivateKey()
+	privateKey, err := getPrivateKey()
 	if err != nil {
 		log.Fatalf("get private key: %v", err)
 	}
@@ -114,7 +114,7 @@ func main() {
 		log.Fatalf("encode json request: %v", err)
 	}
 
-	response, err := http.Post(apiUrl + "/cert", "application/json", bytes.NewReader(jsonPayload))
+	response, err := http.Post(apiUrl+"/cert", "application/json", bytes.NewReader(jsonPayload))
 	if err != nil {
 		log.Fatalf("make cert request: %v", err)
 	}

@@ -52,12 +52,12 @@ func MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error)
 					},
 					PublicKey: &privatecapb.PublicKey{
 						Type: privatecapb.PublicKey_PEM_RSA_KEY,
-						Key: keyPem,
+						Key:  keyPem,
 					},
 				},
 			},
 			Lifetime: durationpb.New(time.Hour * 24),
-			Labels:   map[string]string{
+			Labels: map[string]string{
 				"created-by": "outtune",
 			},
 		},
