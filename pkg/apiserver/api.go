@@ -3,20 +3,22 @@ package apiserver
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/go-chi/chi"
-	"github.com/nais/outtune/pkg/apiserver"
-	"github.com/nais/outtune/pkg/cert"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
+
+	"github.com/go-chi/chi"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/nais/outtune/pkg/cert"
 )
 
 type api struct {
 	value string
+	ca cert.CA
 }
 
 func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
-	var cReq apiserver.CertRequest
+	var cReq CertRequest
 	err := json.NewDecoder(request.Body).Decode(&cReq)
 
 	if err != nil {
@@ -33,14 +35,14 @@ func (a *api) cert(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	trimmedSerial := strings.Replace(cReq.Serial, "\n", "", -1)
-	generatedCert, err := cert.MakeCert(request.Context(), trimmedSerial, publicKey)
+	generatedCert, err := a.ca.MakeCert(request.Context(), trimmedSerial, publicKey)
 	if err != nil {
 		log.Errorf("generating cert: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	err = json.NewEncoder(writer).Encode(apiserver.CertResponse{CertPem: generatedCert})
+	err = json.NewEncoder(writer).Encode(CertResponse{CertPem: generatedCert})
 	if err != nil {
 		log.Errorf("writing response: %v", err)
 	}
@@ -50,8 +52,10 @@ func (a *api) observability(writer http.ResponseWriter, _ *http.Request) {
 	writer.WriteHeader(http.StatusOK)
 }
 
-func New() chi.Router {
-	api := &api{}
+func New(ca cert.CA) chi.Router {
+	api := &api{
+		ca: ca,
+	}
 	r := chi.NewRouter()
 
 	r.Post("/cert", api.cert)
