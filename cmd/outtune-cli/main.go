@@ -52,7 +52,10 @@ func getPrivateKey() (*rsa.PrivateKey, error) {
 		if err != nil {
 			return nil, fmt.Errorf("open file: %w", err)
 		}
-		privateKeyBytes, err := ioutil.ReadAll(file)
+		privateKeyBytes, err := io.ReadAll(file)
+		if err != nil {
+			return nil, err
+		}
 
 		block, rest := pem.Decode(privateKeyBytes)
 		if block == nil {
