@@ -10,13 +10,14 @@ import (
 	"encoding/pem"
 	"flag"
 	"fmt"
-	"github.com/nais/outtune/pkg/apiserver"
-	log "github.com/sirupsen/logrus"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
-	pkcs12 "software.sslmate.com/src/go-pkcs12"
 	"strings"
+
+	"github.com/nais/outtune/pkg/apiserver"
+	log "github.com/sirupsen/logrus"
+	pkcs12 "software.sslmate.com/src/go-pkcs12"
 )
 
 const (

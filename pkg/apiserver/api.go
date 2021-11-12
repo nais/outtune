@@ -14,7 +14,7 @@ import (
 
 type api struct {
 	value string
-	ca cert.CA
+	ca    cert.CA
 }
 
 func (a *api) cert(writer http.ResponseWriter, request *http.Request) {

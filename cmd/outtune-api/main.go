@@ -16,7 +16,7 @@ var (
 	caProvider      string
 	localCACertFile string
 	localCAKeyFile  string
-	localCAInit bool
+	localCAInit     bool
 )
 
 func init() {
@@ -42,7 +42,7 @@ func main() {
 		ca = cert.NewGoogleCA()
 	} else {
 		caCertAndKey, err := tls.LoadX509KeyPair(localCACertFile, localCAKeyFile)
-		if err != nil{
+		if err != nil {
 			log.Fatal(err)
 		}
 		ca = cert.NewLocalCA(&caCertAndKey)

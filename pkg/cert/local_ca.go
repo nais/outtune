@@ -25,23 +25,22 @@ func NewLocalCA(caCertificate *tls.Certificate) CA {
 	}
 }
 
-func (g *localCA) MakeCert(_ context.Context, serial string, keyPem []byte) (string, error) {
+func (ca *localCA) MakeCert(_ context.Context, serial string, keyPem []byte) (string, error) {
 	cert := &x509.Certificate{
 		SerialNumber: big.NewInt(time.Now().UnixMilli()),
 		Subject: pkix.Name{
 			Organization:       []string{"NAV"},
 			Country:            []string{"NO"},
 			OrganizationalUnit: []string{"naisdevice"},
-			CommonName:         fmt.Sprintf("naisdevice - %s is out of tune", serial),
+			CommonName:         fmt.Sprintf("naisdevice - %s", serial),
 		},
-		NotBefore:    time.Now(),
-		NotAfter:     time.Now().Add(24 * time.Hour),
-		SubjectKeyId: g.caCertificate.Leaf.AuthorityKeyId,
-		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
-		KeyUsage:     x509.KeyUsageDigitalSignature,
+		NotBefore:   time.Now(),
+		NotAfter:    time.Now().Add(24 * time.Hour),
+		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
+		KeyUsage:    x509.KeyUsageDigitalSignature,
 	}
 
-	certBytes, err := x509.CreateCertificate(rand.Reader, cert, g.caCertificate.Leaf, keyPem, g.caCertificate.PrivateKey)
+	certBytes, err := x509.CreateCertificate(rand.Reader, cert, ca.caCertificate.Leaf, keyPem, ca.caCertificate.PrivateKey)
 	if err != nil {
 		return "", err
 	}
@@ -107,6 +106,7 @@ func LocalCAInit() error {
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
 	})
+
 	if err != nil {
 		return err
 	}

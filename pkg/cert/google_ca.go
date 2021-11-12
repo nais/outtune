@@ -24,7 +24,7 @@ func NewGoogleCA() CA {
 	return &googleCA{}
 }
 
-func (g *googleCA)MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error) {
+func (g *googleCA) MakeCert(ctx context.Context, serial string, keyPem []byte) (string, error) {
 	client, err := privateca.NewCertificateAuthorityClient(ctx)
 	if err != nil {
 		return "", fmt.Errorf("create client: %w", err)
