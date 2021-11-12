@@ -12,23 +12,15 @@ import (
 	"github.com/nais/outtune/pkg/cert"
 )
 
-var (
-	caProvider      string
-	localCACertFile string
-	localCAKeyFile  string
-	localCAInit     bool
-)
-
-func init() {
-	flag.BoolVar(&localCAInit, "local-ca-init", false, "Initialize new local CA, then exit")
-	flag.StringVar(&localCACertFile, "local-ca-cert", "ca.pem", "Local CA cert")
-	flag.StringVar(&localCAKeyFile, "local-ca-key", "ca.key", "Local CA key")
-	flag.StringVar(&caProvider, "ca-provider", "google", "CA provider (google or local)")
-	flag.Parse()
-}
-
 func main() {
-	if localCAInit {
+	localCAInit := flag.Bool("local-ca-init", false, "Initialize new local CA, then exit")
+	localCAEnabled := flag.Bool("local-ca-enabled", false, "Enable local CA")
+	localCACertFile := flag.String("local-ca-cert", "ca.pem", "Local CA cert")
+	localCAKeyFile := flag.String("local-ca-key", "ca.key", "Local CA key")
+	googleCAEnabled := flag.Bool("google-ca-enabled", false, "Enable Google CA")
+	flag.Parse()
+
+	if *localCAInit {
 		err := cert.LocalCAInit()
 		if err != nil {
 			log.Fatal(err)
@@ -37,18 +29,22 @@ func main() {
 		return
 	}
 
-	var ca cert.CA
-	if caProvider == "google" {
-		ca = cert.NewGoogleCA()
-	} else {
-		caCertAndKey, err := tls.LoadX509KeyPair(localCACertFile, localCAKeyFile)
+	var googleCA, localCA cert.CA
+
+	if *googleCAEnabled {
+		googleCA = cert.NewGoogleCA()
+	}
+
+	if *localCAEnabled {
+		caCertAndKey, err := tls.LoadX509KeyPair(*localCACertFile, *localCAKeyFile)
 		if err != nil {
 			log.Fatal(err)
 		}
-		ca = cert.NewLocalCA(&caCertAndKey)
+
+		localCA = cert.NewLocalCA(&caCertAndKey)
 	}
 
-	router := apiserver.New(ca)
+	router := apiserver.New(localCA, googleCA)
 	fmt.Println("running @", "localhost:8080")
 	fmt.Println(http.ListenAndServe("localhost:8080", router))
 }

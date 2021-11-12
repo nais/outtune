@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	PrivateKeyFileName = "key.pem"
+	PrivateKeyFileName = "device_key.pem"
 )
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
@@ -91,15 +91,13 @@ func publicKeytoPem(key *rsa.PublicKey) ([]byte, error) {
 }
 
 func main() {
-	var email string
-	var apiUrl string
-	flag.StringVar(&email, "email", "", "cert owner email (required)")
-	flag.StringVar(&apiUrl, "apiurl", "https://outtune-api.prod-gcp.nais.io", "url to the api (optional)")
+	serial := flag.String("serial", "", "device serial (required)")
+	apiUrl := flag.String("apiurl", "https://outtune-api.prod-gcp.nais.io", "url to the api (optional)")
 	flag.Parse()
 
-	if email == "" {
+	if serial == nil || *serial == "" {
 		flag.Usage()
-		log.Fatal("email is required")
+		log.Fatal("serial is required")
 	}
 
 	privateKey, err := getPrivateKey()
@@ -112,13 +110,13 @@ func main() {
 		log.Fatalf("get public key pem: %v", err)
 	}
 
-	certReq := apiserver.CertRequest{Serial: email, PublicKeyPem: base64.StdEncoding.EncodeToString(publicKeyPem)}
+	certReq := apiserver.CertRequest{Serial: *serial, PublicKeyPem: base64.StdEncoding.EncodeToString(publicKeyPem)}
 	jsonPayload, err := json.Marshal(certReq)
 	if err != nil {
 		log.Fatalf("encode json request: %v", err)
 	}
 
-	response, err := http.Post(apiUrl+"/cert", "application/json", bytes.NewReader(jsonPayload))
+	response, err := http.Post(*apiUrl+"/cert", "application/json", bytes.NewReader(jsonPayload))
 	if err != nil {
 		log.Fatalf("make cert request: %v", err)
 	}
@@ -128,7 +126,6 @@ func main() {
 		log.Fatalf("unmarshal response json: %v", err)
 	}
 
-	//fmt.Println(certResponse.CertPem)
 	certBlock, _ := pem.Decode([]byte(certResponse.CertPem))
 
 	cert := &x509.Certificate{Raw: certBlock.Bytes}
