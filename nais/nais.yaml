@@ -10,8 +10,8 @@ spec:
   command:
     - /outtune-api
     - --local-ca-enabled=true
-    - --local-ca-cert-file=/tmp/ca-pem/secret
-    - --local-ca-key-file=/tmp/ca-key/secret
+    - --local-ca-cert=/tmp/ca-pem/secret
+    - --local-ca-key=/tmp/ca-key/secret
     - --google-ca-enabled=true
   filesFrom:
     - secret: ca-key
