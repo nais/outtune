@@ -1,4 +1,4 @@
-FROM library/golang:1.16-alpine as builder
+FROM library/golang:1.17-alpine as builder
 
 RUN apk add build-base
 

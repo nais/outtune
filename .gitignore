@@ -6,3 +6,4 @@
 /outtune-cli
 /outtune-api
 *.pem
+*.key
