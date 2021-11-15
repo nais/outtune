@@ -40,7 +40,22 @@ func (ca *localCA) MakeCert(_ context.Context, serial string, keyPem []byte) (st
 		KeyUsage:    x509.KeyUsageDigitalSignature,
 	}
 
-	certBytes, err := x509.CreateCertificate(rand.Reader, cert, ca.caCertificate.Leaf, keyPem, ca.caCertificate.PrivateKey)
+	block, _ := pem.Decode(keyPem)
+	if block == nil {
+		return "", fmt.Errorf("unable to decode pem")
+	}
+
+	publicKey, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return "", fmt.Errorf("parse public key: %s", err)
+	}
+
+	caCert, err := x509.ParseCertificate(ca.caCertificate.Certificate[0])
+	if err != nil {
+		return "", fmt.Errorf("parse ca cert: %s", err)
+	}
+
+	certBytes, err := x509.CreateCertificate(rand.Reader, cert, caCert, publicKey, ca.caCertificate.PrivateKey)
 	if err != nil {
 		return "", err
 	}
