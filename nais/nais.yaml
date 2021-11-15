@@ -7,6 +7,17 @@ metadata:
     "team": "naisdevice"
 spec:
   image: {{image}}
+  command:
+    - /outtune-api
+    - --local-ca-enabled=true
+    - --localCACertFile=/tmp/ca-pem/secret
+    - --localCAKeyFile=/tmp/ca-key/secret
+    - --googleCAEnabled=true
+  filesFrom:
+    - secret: ca-key
+      mountPath: /tmp/ca-key
+    - secret: ca-pem
+      mountPath: /tmp/ca-pem
   liveness:
     path: "/isalive"
     port: 8080
