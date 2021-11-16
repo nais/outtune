@@ -13,9 +13,9 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/nais/outtune/pkg/apiserver"
+	"github.com/nais/outtune/pkg/cert"
 	log "github.com/sirupsen/logrus"
 	pkcs12 "software.sslmate.com/src/go-pkcs12"
 )
@@ -70,26 +70,6 @@ func getPrivateKey() (*rsa.PrivateKey, error) {
 	}
 }
 
-func publicKeytoPem(key *rsa.PublicKey) ([]byte, error) {
-	publicKeyBytes, err := x509.MarshalPKIXPublicKey(key)
-	if err != nil {
-		return nil, fmt.Errorf("error when dumping publickey: %w", err)
-	}
-
-	publicKeyBlock := &pem.Block{
-		Type:  "PUBLIC KEY",
-		Bytes: publicKeyBytes,
-	}
-
-	s := strings.Builder{}
-	err = pem.Encode(&s, publicKeyBlock)
-	if err != nil {
-		return nil, fmt.Errorf("pem encode: %w", err)
-	}
-
-	return []byte(s.String()), nil
-}
-
 func main() {
 	serial := flag.String("serial", "", "device serial (required)")
 	apiUrl := flag.String("apiurl", "https://outtune-api.prod-gcp.nais.io", "url to the api (optional)")
@@ -105,7 +85,7 @@ func main() {
 		log.Fatalf("get private key: %v", err)
 	}
 
-	publicKeyPem, err := publicKeytoPem(&privateKey.PublicKey)
+	publicKeyPem, err := cert.PublicKeytoPem(&privateKey.PublicKey)
 	if err != nil {
 		log.Fatalf("get public key pem: %v", err)
 	}

@@ -7,3 +7,4 @@
 /outtune-api
 *.pem
 *.key
+.vscode
