@@ -73,7 +73,7 @@ func (ca *localCA) MakeCert(_ context.Context, serial string, keyPem []byte) (st
 	return certPEM.String(), nil
 }
 
-func LocalCAInit() error {
+func LocalCAInit(caCertFileName, caKeyFileName string) error {
 	ca := &x509.Certificate{
 		SerialNumber: big.NewInt(69),
 		Subject: pkix.Name{
@@ -89,37 +89,37 @@ func LocalCAInit() error {
 		BasicConstraintsValid: true,
 	}
 
-	caPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	caKey, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
 		return err
 	}
 
-	caBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caPrivKey.PublicKey, caPrivKey)
+	caCertBytes, err := x509.CreateCertificate(rand.Reader, ca, ca, &caKey.PublicKey, caKey)
 	if err != nil {
 		return err
 	}
 
-	caCertFile, err := os.OpenFile("ca.pem", os.O_WRONLY|os.O_CREATE, 0600)
+	caCertFile, err := os.OpenFile(caCertFileName, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return err
 	}
 
-	caCertKeyFile, err := os.OpenFile("ca.key", os.O_WRONLY|os.O_CREATE, 0600)
+	caKeyFile, err := os.OpenFile(caKeyFileName, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return err
 	}
 
 	err = pem.Encode(caCertFile, &pem.Block{
 		Type:  "CERTIFICATE",
-		Bytes: caBytes,
+		Bytes: caCertBytes,
 	})
 	if err != nil {
 		return err
 	}
 
-	err = pem.Encode(caCertKeyFile, &pem.Block{
+	err = pem.Encode(caKeyFile, &pem.Block{
 		Type:  "RSA PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
+		Bytes: x509.MarshalPKCS1PrivateKey(caKey),
 	})
 
 	if err != nil {

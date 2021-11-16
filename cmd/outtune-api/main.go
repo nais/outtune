@@ -21,7 +21,7 @@ func main() {
 	flag.Parse()
 
 	if *localCAInit {
-		err := cert.LocalCAInit()
+		err := cert.LocalCAInit(*localCACertFile, *localCAKeyFile)
 		if err != nil {
 			log.Fatal(err)
 		}
