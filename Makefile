@@ -9,7 +9,7 @@ outtune-cli: $(COMMON_GO_FILES) $(shell find cmd/outtune-cli -type f)
 
 .PHONY: api
 api: outtune-api
-outtune-api: $(COMMON_GO_FILES) $(shell find apiserver cmd/outtune-api -type f)
+outtune-api: $(COMMON_GO_FILES) $(shell find cmd/outtune-api -type f)
 	go build -o $@ ./cmd/$@
 
 .PHONY: clean
@@ -18,4 +18,4 @@ clean:
 
 .PHONY: test
 test:
-	echo "jippi!!!"
+	go test ./...
