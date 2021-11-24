@@ -45,6 +45,6 @@ func main() {
 	}
 
 	router := apiserver.New(localCA, googleCA)
-	fmt.Println("running @", "localhost:8080")
-	fmt.Println(http.ListenAndServe("localhost:8080", router))
+	fmt.Println("running @", "0.0.0.0:8080")
+	fmt.Println(http.ListenAndServe("0.0.0.0:8080", router))
 }
