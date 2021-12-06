@@ -56,10 +56,10 @@ func New(localCA, googleCA cert.CA) chi.Router {
 
 	if localCA != nil {
 		r.Post("/local/cert", certHandler(localCA))
+		r.Post("/cert", certHandler(localCA))
 	}
 	if googleCA != nil {
 		r.Post("/google/cert", certHandler(googleCA))
-		r.Post("/cert", certHandler(googleCA))
 	}
 
 	r.Get("/isalive", observability)
