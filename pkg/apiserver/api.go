@@ -38,6 +38,8 @@ func certHandler(ca cert.CA) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
+		log.Infof("(%s) Returning cert for serial: %s", request.URL.Path, cReq.Serial)
+
 		err = json.NewEncoder(writer).Encode(CertResponse{CertPem: generatedCert})
 		if err != nil {
 			log.Errorf("writing response: %v", err)
