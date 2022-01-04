@@ -12,7 +12,6 @@ spec:
     - --local-ca-enabled=true
     - --local-ca-cert=/tmp/ca-pem/secret
     - --local-ca-key=/tmp/ca-key/secret
-    - --google-ca-enabled=true
   filesFrom:
     - secret: ca-key
       mountPath: /tmp/ca-key
@@ -41,10 +40,6 @@ spec:
   requests:
     cpu: "20m"
     memory: "32Mi"
-  accessPolicy:
-    outbound:
-      external:
-        - host: privateca.googleapis.com
   ingresses:
     {{#each ingresses as |url|}}
     - {{url}}

@@ -51,16 +51,11 @@ func observability(writer http.ResponseWriter, _ *http.Request) {
 	writer.WriteHeader(http.StatusOK)
 }
 
-func New(localCA, googleCA cert.CA) chi.Router {
+func New(localCA cert.CA) chi.Router {
 	r := chi.NewRouter()
 
-	if localCA != nil {
-		r.Post("/local/cert", certHandler(localCA))
-		r.Post("/cert", certHandler(localCA))
-	}
-	if googleCA != nil {
-		r.Post("/google/cert", certHandler(googleCA))
-	}
+	r.Post("/local/cert", certHandler(localCA))
+	r.Post("/cert", certHandler(localCA))
 
 	r.Get("/isalive", observability)
 	r.Get("/isready", observability)

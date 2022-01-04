@@ -17,7 +17,6 @@ func main() {
 	localCAEnabled := flag.Bool("local-ca-enabled", false, "Enable local CA")
 	localCACertFile := flag.String("local-ca-cert", "ca.pem", "Local CA cert")
 	localCAKeyFile := flag.String("local-ca-key", "ca.key", "Local CA key")
-	googleCAEnabled := flag.Bool("google-ca-enabled", false, "Enable Google CA")
 	flag.Parse()
 
 	if *localCAInit {
@@ -29,11 +28,7 @@ func main() {
 		return
 	}
 
-	var googleCA, localCA cert.CA
-
-	if *googleCAEnabled {
-		googleCA = cert.NewGoogleCA()
-	}
+	var localCA cert.CA
 
 	if *localCAEnabled {
 		caCertAndKey, err := tls.LoadX509KeyPair(*localCACertFile, *localCAKeyFile)
@@ -44,7 +39,7 @@ func main() {
 		localCA = cert.NewLocalCA(&caCertAndKey)
 	}
 
-	router := apiserver.New(localCA, googleCA)
+	router := apiserver.New(localCA)
 	fmt.Println("running @", "0.0.0.0:8080")
 	fmt.Println(http.ListenAndServe("0.0.0.0:8080", router))
 }
