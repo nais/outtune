@@ -83,7 +83,7 @@ func LocalCAInit(caCertFileName, caKeyFileName string) error {
 			CommonName:         "naisdevice-root",
 		},
 		NotBefore:             time.Now(),
-		NotAfter:              time.Now().AddDate(1, 0, 0),
+		NotAfter:              time.Now().AddDate(5, 0, 0),
 		IsCA:                  true,
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 		BasicConstraintsValid: true,
@@ -99,12 +99,12 @@ func LocalCAInit(caCertFileName, caKeyFileName string) error {
 		return err
 	}
 
-	caCertFile, err := os.OpenFile(caCertFileName, os.O_WRONLY|os.O_CREATE, 0600)
+	caCertFile, err := os.OpenFile(caCertFileName, os.O_WRONLY|os.O_CREATE, 0o600)
 	if err != nil {
 		return err
 	}
 
-	caKeyFile, err := os.OpenFile(caKeyFileName, os.O_WRONLY|os.O_CREATE, 0600)
+	caKeyFile, err := os.OpenFile(caKeyFileName, os.O_WRONLY|os.O_CREATE, 0o600)
 	if err != nil {
 		return err
 	}
