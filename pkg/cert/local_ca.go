@@ -47,7 +47,7 @@ func (ca *localCA) MakeCert(_ context.Context, serial string, keyPem []byte) (st
 
 	publicKey, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
-		return "", fmt.Errorf("parse public key, raw: %q, err: %s", string(keyPem), err)
+		return "", fmt.Errorf("parse public key, serial: %v, raw: %q, err: %s", serial, string(keyPem), err)
 	}
 
 	caCert, err := x509.ParseCertificate(ca.caCertificate.Certificate[0])
